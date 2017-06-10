@@ -303,7 +303,7 @@ and jit_expr jit return e =
 		if l < 256 then begin
 			let cases = Array.init l (fun i -> try IntMap.find (i + !shift) !h with Not_found -> exec_def) in
 			if !shift = 0 then begin match (Texpr.skip e1).eexpr with
-				| TCall({eexpr = TField(_,FStatic({cl_path=[],"Type"},{cf_name="enumIndex"}))},[e1]) ->
+				| TEnumIndex e1 | TCall({eexpr = TField(_,FStatic({cl_path=[],"Type"},{cf_name="enumIndex"}))},[e1]) ->
 					let exec = jit_expr jit false e1 in
 					emit_enum_switch_array exec cases exec_def e1.epos
 				| _ ->
@@ -721,6 +721,9 @@ and jit_expr jit return e =
 						emit_array_read exec1 exec2 e2.epos
 				end
 		end
+	| TEnumIndex e1 ->
+		let exec = jit_expr jit false e1 in
+		emit_enum_index exec
 	| TEnumParameter(e1,_,i) ->
 		let exec = jit_expr jit false e1 in
 		emit_enum_parameter_read exec i

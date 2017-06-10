@@ -633,6 +633,9 @@ and gen_expr ctx e =
 		gen_expr ctx e1;
 		spr ctx ")";
 		gen_field_access ctx e1.etype (field_name s)
+	| TEnumIndex e ->
+		gen_value ctx e;
+		print ctx ".index";
 	| TEnumParameter (e,_,i) ->
 		gen_value ctx e;
 		print ctx ".params[%i]" i;
@@ -881,6 +884,7 @@ and gen_value ctx e =
 	| TArray _
 	| TBinop _
 	| TField _
+	| TEnumIndex _
 	| TEnumParameter _
 	| TTypeExpr _
 	| TParenthesis _

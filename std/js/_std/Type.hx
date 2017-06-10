@@ -226,7 +226,7 @@ enum ValueType {
 	}
 
 	public inline static function enumIndex( e : EnumValue ) : Int {
-		return untyped e[1];
+		return e.getIndex();
 	}
 
 	public inline static function allEnums<T>( e : Enum<T> ) : Array<T> {

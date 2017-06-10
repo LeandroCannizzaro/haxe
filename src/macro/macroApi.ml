@@ -1204,6 +1204,7 @@ and encode_texpr e =
 			| TCast(e1,mt) -> 24,[loop e1;match mt with None -> vnull | Some mt -> encode_module_type mt]
 			| TMeta(m,e1) -> 25,[encode_meta_entry m;loop e1]
 			| TEnumParameter(e1,ef,i) -> 26,[loop e1;encode_efield ef;vint i]
+			| TEnumIndex e1 -> 27,[loop e1]
 		in
 		encode_obj OTypedExprDef [
 			"pos", encode_pos e.epos;

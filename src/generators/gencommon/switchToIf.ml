@@ -105,7 +105,7 @@ let configure gen (should_convert:texpr->bool) =
 				end
 			| TSwitch(cond,cases,default) -> (try
 				match (simplify_expr cond).eexpr with
-					| TCall( { eexpr = TField(_,FStatic({ cl_path = [],"Type" }, { cf_name = "enumIndex" })) }, [enum] ) ->
+					| TEnumIndex enum | TCall( { eexpr = TField(_,FStatic({ cl_path = [],"Type" }, { cf_name = "enumIndex" })) }, [enum] ) ->
 						let real_enum = match enum.etype with
 							| TEnum(e,_) -> e
 							| _ -> raise Not_found

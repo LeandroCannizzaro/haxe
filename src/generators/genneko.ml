@@ -246,6 +246,8 @@ and gen_expr ctx e =
 					call p (ident p ("@closure" ^ string_of_int n)) [tmp;ident p "@fun"]
 			] , p
 		| _ -> assert false)
+	| TEnumIndex e ->
+		field p (gen_expr ctx e) "index"
 	| TEnumParameter (e,_,i) ->
 		EArray (field p (gen_expr ctx e) "args",int p i),p
 	| TField (e,f) ->

@@ -156,6 +156,9 @@ let rec func ctx bb tf t p =
 		| TNew(c,tl,el) ->
 			let bb,el = ordered_value_list bb el in
 			bb,{e with eexpr = TNew(c,tl,el)}
+		| TEnumIndex e1 ->
+			let bb,e1 = value bb e1 in
+			bb,{e with eexpr = TEnumIndex e1}
 		| TEnumParameter(e1,ef,ei) ->
 			let bb,e1 = value bb e1 in
 			bb,{e with eexpr = TEnumParameter(e1,ef,ei)}
@@ -603,7 +606,7 @@ let rec func ctx bb tf t p =
 			add_texpr bb e;
 			bb
 		(* no-side-effect *)
-		| TEnumParameter _ | TFunction _ | TConst _ | TTypeExpr _ | TLocal _ ->
+		|  TEnumIndex _ | TEnumParameter _ | TFunction _ | TConst _ | TTypeExpr _ | TLocal _ ->
 			bb
 		(* no-side-effect composites *)
 		| TParenthesis e1 | TMeta(_,e1) | TCast(e1,None) | TField(e1,_) | TUnop(_,_,e1) ->

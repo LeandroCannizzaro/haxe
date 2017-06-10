@@ -337,7 +337,7 @@ end;;
 
 
 module EnumToClass2Exprf = struct
-	let init com ec_tbl =
+	let init com ec_tbl gen_index_call =
 		let v_as = alloc_var "__as__" t_dynamic in
 		let rec run e =
 			let get_converted_enum_classes et =
@@ -349,14 +349,14 @@ module EnumToClass2Exprf = struct
 			in
 
 			match e.eexpr with
-			| TCall ({ eexpr = TField (_, FStatic ({ cl_path = ([], "Type") }, { cf_name = "enumIndex" })) } as left, [f]) ->
+			| TEnumIndex f ->
 				let f = run f in
 				(try
 					let cl = (get_converted_enum_classes f.etype).base in
 					let e_enum = { f with etype = TInst (cl, []) } in
 					Codegen.field e_enum "_hx_index" com.basic.tint e.epos
 				with Not_found ->
-					{ e with eexpr = TCall(left, [f]) })
+					gen_index_call f e.epos)
 			| TEnumParameter(f, ef, i) ->
 				let f = run f in
 				(* check if en was converted to class *)
@@ -381,12 +381,12 @@ module EnumToClass2Exprf = struct
 	let name = "enum_to_class2_exprf"
 	let priority = solve_deps name []
 
-	let configure gen ec_tbl =
-		let run = init gen.gcon ec_tbl in
+	let configure gen ec_tbl gen_index_call =
+		let run = init gen.gcon ec_tbl gen_index_call in
 		gen.gexpr_filters#add name (PCustom priority) run
 end;;
 
-let configure gen enum_base_class =
+let configure gen enum_base_class gen_index_call =
 	let ec_tbl = Hashtbl.create 10 in
 	EnumToClass2Modf.configure gen ec_tbl enum_base_class;
-	EnumToClass2Exprf.configure gen ec_tbl;
+	EnumToClass2Exprf.configure gen ec_tbl gen_index_call;

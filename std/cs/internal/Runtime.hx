@@ -24,6 +24,7 @@ import cs.Lib;
 import cs.Lib.*;
 import cs.NativeArray;
 import cs.StdTypes;
+import cs.internal.HxObject;
 import cs.system.Activator;
 import cs.system.IConvertible;
 import cs.system.IComparable;
@@ -690,6 +691,17 @@ import cs.system.Object;
 				return "false";
 
 		return untyped obj.ToString();
+	}
+
+	public static function getEnumIndex( e : EnumValue ) : Int
+	{
+		if (Std.is(e, cs.system.Enum))
+		{
+			var values = cs.system.Enum.GetValues(Lib.getNativeType(e));
+			return cs.system.Array.IndexOf(values, e);
+		} else {
+			return @:privateAccess cast(e, HxEnum)._hx_index;
+		}
 	}
 
 #if erase_generics

@@ -325,16 +325,9 @@ enum ValueType {
 		return Std.is(e, cs.system.Enum) ? [] : cast(e,HxEnum).getParams();
 	}
 
-	@:pure
-	public static function enumIndex( e : EnumValue ) : Int  untyped
+	public static inline function enumIndex( e : EnumValue ) : Int
 	{
-		if (Std.is(e, cs.system.Enum))
-		{
-			var values = cs.system.Enum.GetValues(Lib.getNativeType(e));
-			return cs.system.Array.IndexOf(values, e);
-		} else {
-			return cast(e, HxEnum)._hx_index;
-		}
+		return e.getIndex();
 	}
 
 	public static function allEnums<T>( e : Enum<T> ) : Array<T>

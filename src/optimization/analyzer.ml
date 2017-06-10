@@ -420,6 +420,11 @@ module ConstPropagation = DataFlow(struct
 					| EnumValue(_,el) -> (try List.nth el i with Failure _ -> raise Exit)
 					| _ -> raise Exit
 				end;
+			| TEnumIndex e1 ->
+				begin match follow e1.etype,eval bb e1 with
+					| (TEnum _ | TAbstract ({ a_path = [],"EnumValue" }, _)), EnumValue(i,_) -> Const (TInt (Int32.of_int i))
+					| _ -> raise Exit
+				end
 			| TCall ({ eexpr = TField (_,FStatic({cl_path=[],"Type"} as c,({cf_name="enumIndex"} as cf)))},[e1]) when ctx.com.platform = Eval ->
 				begin match follow e1.etype,eval bb e1 with
 					| TEnum _,EnumValue(i,_) -> Const (TInt (Int32.of_int i))
@@ -439,16 +444,7 @@ module ConstPropagation = DataFlow(struct
 			| TParenthesis e1 | TMeta(_,e1) | TCast(e1,None) ->
 				eval bb e1
 			| _ ->
-				let e1 = match ctx.com.platform,e.eexpr with
-					| Js,TArray(e1,{eexpr = TConst(TInt i)}) when Int32.to_int i = 1 -> e1
-					| Cpp,TCall({eexpr = TField(e1,FDynamic "__Index")},[]) -> e1
-					| Neko,TField(e1,FDynamic "index") -> e1
-					| _ -> raise Exit
-				in
-				begin match follow e1.etype,eval bb e1 with
-					| TEnum _,EnumValue(i,_) -> Const (TInt (Int32.of_int i))
-					| _ -> raise Exit
-				end
+				raise Exit
 		in
 		try
 			eval bb e
@@ -606,7 +602,7 @@ module LocalDce = struct
 			| TNew _ | TCall _ | TBinop ((OpAssignOp _ | OpAssign),_,_) | TUnop ((Increment|Decrement),_,_) -> raise Exit
 			| TReturn _ | TBreak | TContinue | TThrow _ | TCast (_,Some _) -> raise Exit
 			| TFor _ -> raise Exit
-			| TArray _ | TEnumParameter _ | TCast (_,None) | TBinop _ | TUnop _ | TParenthesis _ | TMeta _ | TWhile _
+			| TArray _ | TEnumIndex _ | TEnumParameter _ | TCast (_,None) | TBinop _ | TUnop _ | TParenthesis _ | TMeta _ | TWhile _
 			| TField _ | TIf _ | TTry _ | TSwitch _ | TArrayDecl _ | TBlock _ | TObjectDecl _ | TVar _ -> Type.iter loop e
 		in
 		try

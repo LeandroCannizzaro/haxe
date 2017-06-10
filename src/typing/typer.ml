@@ -4102,6 +4102,12 @@ and type_call ctx e el (with_type:with_type) p =
 		ctx.com.warning (s_type (print_context()) e.etype) e.epos;
 		let e = Display.Diagnostics.secure_generated_code ctx e in
 		e
+	| (EField(e,"getIndex"),p), [] ->
+		let et = type_expr ctx e Value in
+		(match follow et.etype with
+			| TEnum _ | TAbstract ({ a_path = [],"EnumValue" }, _) ->
+				mk (TEnumIndex et) ctx.t.tint p
+			| _ -> def ())
 	| (EField(e,"match"),p), [epat] ->
 		let et = type_expr ctx e Value in
 		(match follow et.etype with

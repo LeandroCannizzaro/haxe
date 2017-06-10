@@ -877,6 +877,9 @@ let rec gen_access ctx e (forset : 'a) : 'a access =
 		let id, _, _ = property ctx f e1.etype in
 		write ctx HThis;
 		VSuper id
+	| TEnumIndex e1 ->
+		gen_expr ctx true e1;
+		VId (ident "index")
 	| TEnumParameter (e1,_,i) ->
 		gen_expr ctx true e1;
 		write ctx (HGetProp (ident "params"));
@@ -1063,7 +1066,7 @@ let rec gen_expr_content ctx retval e =
 	| TTypeExpr _ ->
 		getvar ctx (gen_access ctx e Read)
 	(* both accesses return dynamic so let's cast them to the real type *)
-	| TEnumParameter _ | TArray _ ->
+	| TEnumIndex _ | TEnumParameter _ | TArray _ ->
 		getvar ctx (gen_access ctx e Read);
 		coerce ctx (classify ctx e.etype)
 	| TBinop (op,e1,e2) ->

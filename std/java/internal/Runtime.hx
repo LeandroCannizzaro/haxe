@@ -582,6 +582,18 @@ package java.internal;
 	{
 		return (v == v) && !java.lang.Double.DoubleClass._isInfinite(v);
 	}
+
+	@:functionCode('
+		if (e instanceof java.lang.Enum)
+			return ((java.lang.Enum) e).ordinal();
+		else
+			return ((haxe.lang.Enum) e).index;
+	')
+	public static inline function getEnumIndex( e : EnumValue ) : Int
+	{
+		return 0;
+	}
+
 }
 
 @:keep @:native("haxe.lang.EmptyObject") enum EmptyObject

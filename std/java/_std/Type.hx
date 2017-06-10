@@ -407,15 +407,9 @@ enum ValueType {
 		return null;
 	}
 
-	@:functionCode('
-		if (e instanceof java.lang.Enum)
-			return ((java.lang.Enum) e).ordinal();
-		else
-			return ((haxe.lang.Enum) e).index;
-	')
-	public static function enumIndex( e : EnumValue ) : Int untyped
+	public static inline function enumIndex( e : EnumValue ) : Int untyped
 	{
-		return e.index;
+		return e.getIndex();
 	}
 
 	public static function allEnums<T>( e : Enum<T> ) : Array<T>

@@ -253,7 +253,7 @@ struct
 	let name = "enum_to_class_exprf"
 	let priority = solve_deps name [DBefore TArrayTransform.priority]
 
-	let configure gen t opt_get_native_enum_tag =
+	let configure gen t gen_index_call =
 		let rec run e =
 			let get_converted_enum_type et =
 				let en, eparams = match follow (gen.gfollow#run_f et) with
@@ -265,12 +265,13 @@ struct
 			in
 
 			match e.eexpr with
-			| TCall (({eexpr = TField(_, FStatic({cl_path=[],"Type"},{cf_name="enumIndex"}))} as left), [f]) ->
+			| TEnumIndex f ->
 				let f = run f in
+				(* TODO: probably will fail with @:nativeGen enums, gotta check *)
 				(try
 					mk_field_access gen {f with etype = get_converted_enum_type f.etype} "index" e.epos
 				with Not_found ->
-					{ e with eexpr = TCall(left, [f]) })
+					gen_index_call f e.epos)
 			| TEnumParameter(f, _,i) ->
 				let f = run f in
 				(* check if en was converted to class *)
@@ -289,7 +290,7 @@ struct
 
 end;;
 
-let configure gen opt_get_native_enum_tag convert_all convert_if_has_meta enum_base_class param_enum_class =
+let configure gen convert_all convert_if_has_meta enum_base_class param_enum_class gen_index_call =
 	let t = new_t () in
 	EnumToClassModf.configure gen t convert_all convert_if_has_meta enum_base_class param_enum_class;
-	EnumToClassExprf.configure gen t opt_get_native_enum_tag
+	EnumToClassExprf.configure gen t gen_index_call

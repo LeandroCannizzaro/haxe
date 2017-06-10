@@ -225,6 +225,7 @@ let rec shallow_expr_type expr : shallow_expr_type =
 		| TArray _
 		| TBinop _
 		| TField _
+		| TEnumIndex _
 		| TEnumParameter _
 		| TTypeExpr _
 		| TObjectDecl _

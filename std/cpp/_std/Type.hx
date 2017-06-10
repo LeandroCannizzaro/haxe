@@ -140,11 +140,8 @@ enum ValueType {
 			return value._hx_getParameters();
 	}
 
-   @:extern @:native("_hx_getEnumValueIndex")
-	private static function getEnumValueIndex( e : EnumValue ) : Int return 0;
-
-	#if !cppia inline #end public static function enumIndex( e : EnumValue ) : Int {
-			return getEnumValueIndex(e);
+	inline public static function enumIndex( e : EnumValue ) : Int {
+			return e.getIndex();
 	}
 
 	public static function allEnums<T>( e : Enum<T> ) : Array<T> {

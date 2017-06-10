@@ -709,6 +709,10 @@ module Transformer = struct
 			let e1 = trans true [] e1 in
 			let p = { ae.a_expr with eexpr = TParenthesis(e1.a_expr)} in
 			lift true e1.a_blocks p
+		| (_, TEnumIndex e1) ->
+			let e1 = trans true [] e1 in
+			let p = { ae.a_expr with eexpr = TEnumIndex e1.a_expr} in
+			lift true e1.a_blocks p
 		| (_, TEnumParameter(e1,ef,i)) ->
 			let e1 = trans true [] e1 in
 			let p = { ae.a_expr with eexpr = TEnumParameter(e1.a_expr,ef,i)} in
@@ -1187,6 +1191,8 @@ module Printer = struct
 				print_module_type mt
 			| (TLocal v | TParenthesis({ eexpr = (TLocal v) })) ->
 				handle_keywords v.v_name
+			| TEnumIndex e1 ->
+				Printf.sprintf "%s.index" (print_expr pctx e1)
 			| TEnumParameter(e1,_,index) ->
 				Printf.sprintf "%s.params[%i]" (print_expr pctx e1) index
 			| TArray(e1,e2) when (is_type1 "" "list")(e1.etype) || is_underlying_array e1.etype ->
